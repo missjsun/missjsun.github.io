@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Your Group Based on Gender{% endblock %}</h1>
+{% endblock %}
+
+{% block content%}
+
+<p>Student Pair Groups:</p>
+
+<table>
+{% for key, value in pairs.items() %}
+   <tr>
+        <th> {{ key }} </th>
+        <td> {{ value }} </td>
+   </tr>
+{% endfor %}
+</table>
+    <p>Any Singles: </p>{{ single }}
+<table border="1" class="dataframe"> <thead> <tr style="text-align: center;"><th></th></tr></thead></table>
+<p></p>
+    <button onClick="window.location.reload();">Recreate</button>
+         <a href="/downloads/gendergroups.csv" download="gendergroups.csv">
+         <button type="button">Download</button>
+         </a>
+
+    {% endblock content %}

@@ -1,0 +1,27 @@
+
+<!doctype html>
+<html>
+<title>{% block title %}{% endblock %} Group Optimization</title>
+<head>
+<link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
+</head>
+<nav>
+  <h1>Group Optimization</h1>
+</nav>
+<body>
+<ul>
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+        <li><a href="{{ url_for('upload.upload') }}">Upload</a></li>
+        <li><a href="{{ url_for('create') }}">Create Groups</a></li>
+        <li><a href="{{ url_for('form')}}">Create Google Form</a></li>
+  </ul>
+
+<div>
+    <header>
+         {% block header %}{% endblock %}
+    </header>
+    {% block content %}{% endblock %}
+</div>
+</body>
+</html>
+

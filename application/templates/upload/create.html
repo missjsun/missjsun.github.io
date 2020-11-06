@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+
+<title>{% block title %}{% endblock %} Upload</title>
+
+  <h1>File Upload</h1>
+
+
+{% block content%}
+
+<h2>Choose your preferences for creating groups</h2>
+
+    These students have not rated others: {{ missing }}
+
+    <p>Please make sure they have rated everyone before creating groups based on rating.</p>
+
+    <h4>Select the customizations for your group:</h4>
+<form method='post' action="/mixed">
+  <input type="checkbox" id="gender" name="gender" value="gender">
+  <label for="gender"> Mixed Gender</label><br>
+  <input type="checkbox" id="rate" name="rate" value="rate">
+  <label for="rate"> Student Preferences/Ratings</label><br>
+  <input type="checkbox" id="mixed" name="mixed" value="mixed">
+  <label for="mixed"> Mixed Abilities</label><br><br>
+    <input type="checkbox" id="banned" name="banned" value="banned">
+  <label for="banned"> Banned Pairs</label><br><br>
+
+
+    <p>How many students in each group?</p>
+        <input type="radio" id="2" name="numOfStudents" value="2">
+        <label for="2">2</label><br>
+        <input type="radio" id="3" name="numOfStudents" value="3">
+        <label for="3">3</label><br>
+        <input type="radio" id="4" name="numOfStudents" value="4">
+        <label for="4">4</label><br>
+        <input type="radio" id="5" name="numOfStudents" value="5">
+        <label for="5">5</label><br>
+
+        <p><input type=submit value=Submit></p>
+    </form>
+
+
+{% endblock content%}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Welcome to Group Optimization{% endblock %}</h1>
+{% endblock %}
+
+{% block content%}
+
+<p>Let's save you some time by letting us create student groups for you!</p>
+    <p>Get your student data ready and click below to get started!</p>
+<p></p>
+    <a href="{{url_for('upload.upload')}}" class="button">Try now</a>
+
+    {% endblock content %}
