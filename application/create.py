@@ -1,22 +1,22 @@
-from Flask import (Blueprint, request, render_template)
-import upload
+from flask import (Blueprint, request, render_template)
 import mixed
 
-@bp.route('/create', methods=('GET','POST')
+bp = Blueprint('create', __name__)
+
+@bp.route('/create', methods=('GET','POST'))
 def create_groups():
-    gender = request.form.get('gender') != None
-    rate = request.form.get('rate') != None
-    mixed = request.form.get('mixed') != None
-    banned = request.form.get('banned') != None
+    if request.method == 'POST':
+        selected = []
+        selected = request.form.getlist('choice')
 
-    numStudentperGroup = int(request.form['numOfStudents'])
+        numStudentperGroup = int(request.form['numOfStudents'])
 
+        for i in selected:
+            if "mixed":
+                groups = mixed.mixed_groups(numStudentperGroup)
+        return render_template('upload/mixed.html', groups=groups)
 
-    if mixed:
-        upload.mixed_groups(numStudentperGroup)
-        return render_template('upload/mixed.html')
-
-    return render_template('upload/mixed.html')
+    return render_template('upload/create.html')
                         
 
 

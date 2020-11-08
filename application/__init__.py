@@ -18,13 +18,17 @@ def create_app():
     def input():
         return render_template('upload/index.html')
 
+    @app.route('/mixed', methods=['GET','POST'])
+    def mixed_groups():
+        return render_template('upload/mixed.html', groups=finalizedGroups, names=nameList, grade=grade)
+
 #    @app.route('/upload', methods=['GET', 'POST'])
 #    def upload():
 #        return render_template('upload/upload.html')
 
-    @app.route('/create', methods=['GET','POST'])
-    def create():
-        return render_template('upload/create.html')
+    #@app.route('/create', methods=['GET','POST'])
+    #def create():
+
 
     @app.route('/downloads/<path:filename>',methods=["GET",'POST'])
     def downloads(filename):
@@ -37,11 +41,13 @@ def create_app():
     from . import gender
     app.register_blueprint(gender.bp)
 
-    from . import mixed
-    app.register_blueprint(mixed.bp)
+ #   from . import mixed
+ #   app.register_blueprint(mixed.bp)
 
     from . import upload
     app.register_blueprint(upload.bp)
 
+    from . import create
+    app.register_blueprint(create.bp)
 
     return app

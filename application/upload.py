@@ -5,26 +5,30 @@ bp = Blueprint('upload', __name__)
 
 @bp.route('/upload', methods=("GET",'POST'))
 def upload():
-    missing_students_wo_rating = "None"
+
     if request.method == 'POST':
         uploaded_files = request.files.getlist('file[]')
-        filenames = []
+        missing_students_wo_rating=[]
+
         for f in uploaded_files:
             df = pd.read_csv(f)
             col = df.columns.values.tolist()
-            if 'grades' not in col:
-                missing_students_wo_rating = []
+            if 'grade' not in col:
+                df = df.set_index('names')
                 col_names = df.columns.values.tolist()
                 row_names = df.index.tolist()
 
                 if sorted(col_names) != sorted(row_names):
                     missing_students_wo_rating.append(set(col_names).difference(row_names))
-
-                df = df.set_index('names')
-                df.to_pickle('rating')
+                df.to_pickle('rating_pkl')
 
             else:
-                df.to_pickle('all')
+                df.to_pickle('all_pkl')
 
-    return render_template('upload/upload.html', missing=missing_students_wo_rating)
+            if not missing_students_wo_rating:
+                missing_students_wo_rating = "None"
+
+            return render_template('upload/create.html', missing=missing_students_wo_rating)
+
+    return render_template('upload/upload.html')
 

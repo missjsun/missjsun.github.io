@@ -1,3 +1,6 @@
+import pandas as pd
+import io
+
 # create a class for each student
 class Student:
     def __init__(self, name, grade, gender, banned):
@@ -85,27 +88,27 @@ def create_Students():
 
 
 def name_list():
-    a = pd.read_pickle('all')
+    a = pd.read_pickle('all_pkl')
     all_df = a['student'].tolist()
     return all_df
 
 
 def grade_list():
     # get grade list
-    a = pd.read_pickle('all')
+    a = pd.read_pickle('all_pkl')
     all_df = a['grade'].tolist()
     return all_df
 
 
 def change_info_to_list():
-    a = pd.read_pickle('all')
+    a = pd.read_pickle('all_pkl')
     all_list = a.values.tolist()
     return all_list
 
 
 def shuffle_order():
     # get header and shuffle, then rearrange with new header
-    rate_df = pd.read_pickle('ratings')
+    rate_df = pd.read_pickle('rating_pkl')
     header = rate_df.columns.tolist()
     random.shuffle(header)
     rate_df = rate_df[header]
@@ -113,5 +116,5 @@ def shuffle_order():
 
 
 def dict_rate():
-    dict_of_rate = pd.read_csv('ratings').to_dict('index')
+    dict_of_rate = pd.read_csv('rating_pkl').to_dict('index')
     return dict_of_rate

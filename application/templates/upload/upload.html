@@ -10,19 +10,12 @@
 
 <h2>Upload your class information</h2>
 
-    <h4>Student list and gender</h4>
+    <h4>Upload multiple CSV files of your student data.</h4>
     <form method=post action="/upload" enctype=multipart/form-data>
-        <p><input type=file name=file multiple='' accept="text/csv"></p>
+        <p><input type=file name=file[] multiple='' accept="text/csv"></p>
         <p><input type=submit value=Upload></p>
     </form>
 
-
-    <h4>Student rankings</h4>
-    <p>*All students need to have ranked everyone else.*</p>
-    <form method=post action="/upload" enctype=multipart/form-data>
-        <p><input type=file accept=csv name=rating></p>
-        <p><input type=submit value=Upload></p>
-    </form>
 
 
 {% endblock content%}
