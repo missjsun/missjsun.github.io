@@ -174,7 +174,7 @@ def mixed_groups(numberofstudents):
                 finalizedGroups.append(groupNames[i])
 
         path = 'application/downloads'
-        output_file = os.path.join(path, 'mixedgroups.csv')
+        output_file = os.path.join(path, 'finalGroup.csv')
         userdownload=pd.DataFrame(finalizedGroups)
         userdownload.to_csv(output_file, index=False,header=False)
 

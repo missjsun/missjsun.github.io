@@ -1,18 +1,16 @@
-from flask import (Blueprint, render_template,request)
+from flask import (render_template,request)
 
 import pandas as pd
 import random
+import os
 
 
-bp = Blueprint('gender', __name__)
+#bp = Blueprint('gender', __name__)
 
-@bp.route('/gender', methods=('GET','POST'))
+#@bp.route('/gender', methods=('GET','POST'))
 def gender_groups():
-    df = pd.read_csv(request.files.get('file'))
 
-    df.to_pickle('my_df.pkl')
-    df2 = pd.read_pickle('my_df.pkl')
-#    df2 = pd.read_csv('studentgender.csv')
+    df2 = pd.read_pickle('all_pkl')
 
     namelist = df2['student'].tolist()
     genderList = df2['gender'].tolist()
@@ -55,11 +53,11 @@ def gender_groups():
         f = genderList.count('f')
 
     path = 'application/downloads'
-    output_file = os.path.join(path, 'gendergroups.csv')
+    output_file = os.path.join(path, 'finalGroup.csv')
 
     userdownload = pd.DataFrame.from_dict(pairs,orient='index')
     userdownload.to_html()
     userdownload.to_csv(output_file, header=False)
 
-
-    return render_template('upload/gender.html', pairs=pairs, single=single)
+    return pairs, single
+    #return render_template('upload/gender.html', pairs=pairs, single=single)
