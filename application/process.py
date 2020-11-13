@@ -1,4 +1,5 @@
 import pandas as pd
+import random
 import io
 
 # create a class for each student
@@ -11,17 +12,22 @@ class Student:
         self.preferdict = {}
 
     def add_dict(self, preferdict):
-        self.preferdict.update(preferdict)
+        new = {k:v for k,v in preferdict.items() if pd.notnull(k)}
+        self.preferdict.update(new)
 
-    def display(self):
-        print("Name: ", self.name, ", Grade: ", self.grade, ", Gender: ", self.gender, ",Banned: ", self.banned)
-        print(self.preferdict)
+    def __repr__(self):
+        if not self.preferdict:
+            return "< name:%s  grade:%s  gender:%s  banned:%s>" % (self.name, self.grade, self.gender, self.banned)
+        else:
+            for key, value in self.preferdict.items():
+                return "< name:%s  grade:%s  gender:%s  banned:%s, key:%s, value:%s>" % (self.name, self.grade, self.gender, self.banned, key, value)
 
-        # creates an instance/object of each student from all.csv. Puts each student in a list to access: students[0].name
+ # creates an instance/object of each student from all.csv. Puts each student in a list to access: students[0].name
 
 
 def create_Students():
     students = []
+    missing_students_wo_info = []
     all_list = change_info_to_list()
     rate = shuffle_order()
     studentnames = rate.index.tolist()
@@ -37,7 +43,7 @@ def create_Students():
             students.append(Student(all_list[i][0], all_list[i][1], all_list[i][2], all_list[i][3]))
 
     # checks the rating csv. Sees if student is already an object to add to their preference to their instance
-    index = -1
+    index = 0
     for i in range(len(studentnames)):  # iterates through rating dictionary order
         if any(x.name == studentnames[i] for x in students):  # checks if student an object
             for a, b in enumerate(students):  # finds the index number for that object
@@ -50,12 +56,13 @@ def create_Students():
             for key, value in ranksforstudentdict.items():  # creates new dictionary based on #rank as key; students as list values
                 if value in new_dict_of_rate:
                     new_dict_of_rate[value].append(key)
+                    if len(new_dict_of_rate[value])>1:
+                        random.shuffle(new_dict_of_rate[value])
                 else:
                     new_dict_of_rate[value] = [key]
             students[a].add_dict(new_dict_of_rate)  # adds this dictionary to the object
 
         else:
-            missing_students_wo_info = []
             students.append(Student(studentnames[i], 0, 'n', 'None'))
             missing_students_wo_info.append(studentnames[i])
             ranks_for_student = rate.loc[studentnames[i]]
@@ -64,25 +71,25 @@ def create_Students():
             for key, value in ranksforstudentdict.items():
                 if value in new_dict_of_rate:
                     new_dict_of_rate[value].append(key)
+                    if len(new_dict_of_rate[value])>1:
+                        random.shuffle(new_dict_of_rate[value])
                 else:
                     new_dict_of_rate[value] = [key]
 
-            students[i].add_dict(new_dict_of_rate)
-            break
+            students[i+1].add_dict(new_dict_of_rate)
+    return students
 
-    # changes rating for banned students to 1
+def banned_students_in_class(students):    # changes rating for banned students to 0
     for i in range(len(students)):
         if students[i].banned != 'None':
             banned_student = students[i].banned
             for key in students[i].preferdict.values():
                 try:
                     key.remove(banned_student)
+                    break
                 except ValueError:
                     pass
-            if 1.0 in students[i].preferdict:
-                students[i].preferdict[1.0].append(banned_student)
-            else:
-                students[i].preferdict[1.0] = banned_student
+            students[i].preferdict[0.0] = [banned_student]
 
     return students
 

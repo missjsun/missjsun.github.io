@@ -1,15 +1,17 @@
+from flask import render_template
 import pandas as pd
 import collections
+import os
 import random
 from matching import Player
 from matching.games.stable_roommates import _make_players
 from matching.algorithms import stable_roommates
+import process
+import upload
 
-def rating():
+def rating(df2):
     '''Gets the students preferences and finds the best pairs based 
     on their preferences'''
-    df = upload.shuffle_order()
-    df2 = df.to_dict('index')
 
     #removes NaN spots
     df3 = {k1:{k:v for k,v in v1.items() if pd.notnull(v)} for k1, v1 in df2.items()}
@@ -58,13 +60,23 @@ def rating():
 
 def check_matches():
 #keeps running matches until everyone has a pair.
-    finalMatch = rating()
+
+    df = process.shuffle_order()
+    df2 = df.to_dict('index')
+
+    finalMatch = rating(df2)
     no_match = True
     while no_match:
         if "None" in finalMatch.values() or "None" in finalMatch.keys():
-            finalMatch = rating()
+            finalMatch = rating(df2)
         else:
             no_match = False
+
+    #path = 'application/downloads'
+    #output_file = os.path.join(path, 'finalGroup.csv')
+
+    #userdownload = pd.DataFrame(finalMatch)
+    #userdownload.to_csv(output_file, index=False, header=False)
     return finalMatch
 
 
@@ -97,6 +109,7 @@ def grades_for_pair_matches(finalMatch):
 
         total=grade1+grade2
         pairGrade.append(total)
+
     return pairGrade
 
 
