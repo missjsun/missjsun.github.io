@@ -30,8 +30,12 @@ def create_Students():
     missing_students_wo_info = []
     all_list = change_info_to_list()
     rate = shuffle_order()
-    studentnames = rate.index.tolist()
+    if len(rate)==0:
+        studentnames = []
+    else:
+        studentnames = rate.index.tolist()
 
+    # creates objects using the all list
     for i in range(len(all_list)):
         if any(x.name == all_list[i][0] for x in students):
             for a, b in enumerate(students):
@@ -61,12 +65,13 @@ def create_Students():
                 else:
                     new_dict_of_rate[value] = [key]
             students[a].add_dict(new_dict_of_rate)  # adds this dictionary to the object
+            print("this is the first for loop...")
 
         else:
-            students.append(Student(studentnames[i], 0, 'n', 'None'))
+
             missing_students_wo_info.append(studentnames[i])
-            ranks_for_student = rate.loc[studentnames[i]]
-            ranksforstudentdict = ranks_for_student.to_dict()
+            ranks_for_student = rate.loc[studentnames[i]] #gets all the ratings
+            ranksforstudentdict = ranks_for_student.to_dict() #puts their rating to a dictionary
             new_dict_of_rate = {}
             for key, value in ranksforstudentdict.items():
                 if value in new_dict_of_rate:
@@ -75,8 +80,8 @@ def create_Students():
                         random.shuffle(new_dict_of_rate[value])
                 else:
                     new_dict_of_rate[value] = [key]
-
-            students[i+1].add_dict(new_dict_of_rate)
+            students.append(Student(studentnames[i], 0, 'n', 'None'))
+            students[-1].add_dict(new_dict_of_rate)
     return students
 
 def banned_students_in_class(students):    # changes rating for banned students to 0
@@ -96,29 +101,41 @@ def banned_students_in_class(students):    # changes rating for banned students 
 
 def name_list():
     a = pd.read_pickle('all_pkl')
-    all_df = a['student'].tolist()
+    try:
+        all_df = a['student'].tolist()
+    except AttributeError:
+        all_df = []
     return all_df
 
 
 def grade_list():
     # get grade list
     a = pd.read_pickle('all_pkl')
-    all_df = a['grade'].tolist()
+    try:
+        all_df = a['grade'].tolist()
+    except AttributeError:
+        all_df = []
     return all_df
 
 
 def change_info_to_list():
     a = pd.read_pickle('all_pkl')
-    all_list = a.values.tolist()
+    try:
+        all_list = a.values.tolist()
+    except AttributeError:
+        all_list = []
     return all_list
 
 
 def shuffle_order():
     # get header and shuffle, then rearrange with new header
     rate_df = pd.read_pickle('rating_pkl')
-    header = rate_df.columns.tolist()
-    random.shuffle(header)
-    rate_df = rate_df[header]
+    try:
+        header = rate_df.columns.tolist()
+        random.shuffle(header)
+        rate_df = rate_df[header]
+    except AttributeError:
+        rate_df=[]
     return rate_df
 
 

@@ -1,43 +1,41 @@
-from flask import render_template
 import pandas as pd
-import collections
-import os
-import random
 from matching import Player
 from matching.games.stable_roommates import _make_players
 from matching.algorithms import stable_roommates
 import process
-import upload
 
-def rating(df2):
-    '''Gets the students preferences and finds the best pairs based 
-    on their preferences'''
 
-    #removes NaN spots
-    df3 = {k1:{k:v for k,v in v1.items() if pd.notnull(v)} for k1, v1 in df2.items()}
+def change_to_dict_for_rating(students):
+    new_dict = {}
+    new_list = []
 
-    #sorts each student by their preference in decreasing order
-    df4 = {key:dict(sorted(val.items(),key=lambda x:x[1], reverse=True))
-        for key, val in df3.items()}
+    for i in range(0, len(students)):
+        name = students[i].name
 
-    #creates a new dictionary with just the student name and their preference.
-    new_dict={}
-    new_list=[]
+        for key, value in sorted(students[i].preferdict.items(), reverse=True):
+            new_list.append(value)
 
-    for k1, v1 in df4.items():
-        for subk in v1.keys():
-            new_list.append(subk)
-        new_dict[k1] = new_list
-        new_list=[]
+        flat_list = [item for sublist in new_list for item in sublist]
+        for a in flat_list:
+            if pd.isnull(a):
+                flat_list.remove(a)
+        new_dict[name] = flat_list
 
-    #finds the best matches
-    game = _make_players(new_dict)
+        new_list = []
+        flat_list = []
+    return new_dict
+
+
+def final_matches(students):
+    dictionary = change_to_dict_for_rating(students)  # to start game
+    game = _make_players(dictionary)
     matching = stable_roommates(game)
+    matching = check_final_matches(matching)
 
-    #takes the pairs of students in dictionary and create 2 separate lists as string type.
+    # takes the pairs of students in dictionary and create 2 separate lists as string type.
     ls = []
-    pair1=[]
-    pair2=[]
+    pair1 = []
+    pair2 = []
     ls = list(matching.keys())
     for elem in ls:
         elem = str(elem)
@@ -47,36 +45,31 @@ def rating(df2):
     for item in st:
         item = str(item)
         pair2.append(item)
-        
-    #convert back to dictionary as string type
-    matching = {pair1[i]: pair2[i] for i in range(len(pair1))} 
-    #checks for duplicates and removes the duplicate pair of matches
+
+    # convert back to dictionary as string type
+    matching = {pair1[i]: pair2[i] for i in range(len(pair1))}
+
+    # checks for duplicates and removes the duplicate pair of matches
     finalMatch = {}
     for key, value in matching.items():
         if key not in finalMatch.values():
-            finalMatch[key]=value     
+            finalMatch[key] = value
+    print(finalMatch)
+
     return finalMatch
 
-
-def check_matches():
-#keeps running matches until everyone has a pair.
-
-    df = process.shuffle_order()
-    df2 = df.to_dict('index')
-
-    finalMatch = rating(df2)
+def check_final_matches(finalMatch):
+    # checks final matches
     no_match = True
-    while no_match:
-        if "None" in finalMatch.values() or "None" in finalMatch.keys():
-            finalMatch = rating(df2)
+    counter = 0
+    while no_match and counter < 50:
+        if None in finalMatch.values() or None in finalMatch.keys():
+            students = process.create_Students()
+            finalMatch = final_matches(students)
+            counter = counter + 1
         else:
             no_match = False
 
-    #path = 'application/downloads'
-    #output_file = os.path.join(path, 'finalGroup.csv')
-
-    #userdownload = pd.DataFrame(finalMatch)
-    #userdownload.to_csv(output_file, index=False, header=False)
     return finalMatch
 
 
@@ -84,8 +77,8 @@ def grades_for_pair_matches(finalMatch):
 #Gets the sum of grade for each matched pair. Needed with the mixed group option.
  
     #gets the names and grades for students
-    nameList = upload.name_list()
-    grade = upload.grade_list()
+    nameList = process.name_list()
+    grade = process.grade_list()
 
 
     #find the sum of grade for each pair of student matches.
@@ -111,5 +104,6 @@ def grades_for_pair_matches(finalMatch):
         pairGrade.append(total)
 
     return pairGrade
+
 
 

@@ -9,7 +9,8 @@
 {% block content%}
 
 <h2>Please make sure that all students have rated everyone.</h2>
-    <p>The person who still needs to rate others is: {{ missing }}</p>
+    <p>These are the student(s) who are missing a rating (or have rated themselves):</p>
+    <p><ul class="b">{% for student in missing %} <li>{{ student }}</li>{% endfor %}</p>
 
     <h4>Upload multiple CSV files of your student data.</h4>
     <form method=post action="/upload" enctype=multipart/form-data>

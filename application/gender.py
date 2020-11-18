@@ -4,10 +4,6 @@ import pandas as pd
 import random
 import os
 
-
-#bp = Blueprint('gender', __name__)
-
-#@bp.route('/gender', methods=('GET','POST'))
 def gender_groups():
 
     df2 = pd.read_pickle('all_pkl')
@@ -60,4 +56,3 @@ def gender_groups():
     userdownload.to_csv(output_file, header=False)
 
     return pairs, single
-    #return render_template('upload/gender.html', pairs=pairs, single=single)

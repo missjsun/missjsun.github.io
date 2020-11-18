@@ -1,27 +1,22 @@
 import random
 import statistics
 import numpy as np
-import pandas as pd
-import process
-import os
 
-def mixed_groups(numberofstudents):
-  #  if request.method =='POST':
 
+def mixed_groups(numberofstudents, grade, names):
+        grade = grade
         numStudentperGroup = numberofstudents
-        nameList = process.name_list()
-        grade = process.grade_list()
 
-    # shuffles the lists together
-        temp = list(zip(nameList, grade))
-        random.shuffle(temp)
-        nameList, grade = zip(*temp)
-
-    # changing tuple to lists
-        nameList = list(nameList)
-        grade = list(grade)
+        try:
+            nameList = list(names.keys())
+        except (AttributeError, TypeError):
+            nameList = names
+        else: # no exception raised
+            pair1 = list(names.keys())
+            pair2 = list(names.values())
 
     # get some data
+
         totalGrade = sum(grade)
         numStudents = len(grade)
 
@@ -29,8 +24,8 @@ def mixed_groups(numberofstudents):
         res = statistics.pstdev(grade)
         if numStudentperGroup == 2:
             pointsPerGroup = totalGrade / numGroups
-            pointsRangeLow = pointsPerGroup - 2*res
-            pointsRangeHigh = pointsPerGroup + 2*res
+            pointsRangeLow = pointsPerGroup - 1.5*res
+            pointsRangeHigh = pointsPerGroup + 1.5*res
         else:
             pointsPerGroup = totalGrade / numGroups
             pointsRangeLow = pointsPerGroup - res
@@ -173,9 +168,26 @@ def mixed_groups(numberofstudents):
             for i in range(0, len(groupNames)):
                 finalizedGroups.append(groupNames[i])
 
-        path = 'application/downloads'
-        output_file = os.path.join(path, 'finalGroup.csv')
-        userdownload=pd.DataFrame(finalizedGroups)
-        userdownload.to_csv(output_file, index=False,header=False)
+        try:
+            list(names.keys())
+        except (AttributeError, TypeError):
+            final = finalizedGroups
+        else: # no exception raised
+            final = []
+            templist = []
+            for a in finalizedGroups:
+                for b in a:
+                    for key in names:
+                        if b == key:
+                            templist.append(b)
+                            templist.append(names[b])
+                final.append(templist)
+                templist = []
 
-        return (finalizedGroups)
+        #check for banned
+        print (final)
+
+
+
+
+        return final
