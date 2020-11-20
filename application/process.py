@@ -29,11 +29,14 @@ def create_Students():
     students = []
     missing_students_wo_info = []
     all_list = change_info_to_list()
-    rate = shuffle_order()
-    if len(rate)==0:
-        studentnames = []
-    else:
-        studentnames = rate.index.tolist()
+    print('allList')
+    print(all_list)
+    rate, studentnames = shuffle_order()
+    print('Rate')
+    print(rate)
+    print('studentnames')
+    print(studentnames)
+
 
     # creates objects using the all list
     for i in range(len(all_list)):
@@ -101,9 +104,13 @@ def banned_students_in_class(students):    # changes rating for banned students 
 
 def name_list():
     a = pd.read_pickle('all_pkl')
+    print('a - namelist')
+    print(a)
     try:
         all_df = a['student'].tolist()
-    except AttributeError:
+        all_df = [x.capitalize() for x in all_df]
+        print(all_df)
+    except (AttributeError, TypeError):
         all_df = []
     return all_df
 
@@ -113,30 +120,52 @@ def grade_list():
     a = pd.read_pickle('all_pkl')
     try:
         all_df = a['grade'].tolist()
-    except AttributeError:
+    except (AttributeError, TypeError):
         all_df = []
     return all_df
 
 
 def change_info_to_list():
     a = pd.read_pickle('all_pkl')
+    print(a)
     try:
         all_list = a.values.tolist()
-    except AttributeError:
+        templist = []
+        all = []
+        for i in all_list:
+            for b in i:
+                if isinstance(b, str):
+                    templist.append(b.capitalize())
+                else:
+                    templist.append(b)
+            all.append(templist)
+            all_list = all
+            templist = []
+    except (AttributeError, TypeError):
         all_list = []
+
+    print('all_list')
+    print(all_list)
     return all_list
 
 
 def shuffle_order():
     # get header and shuffle, then rearrange with new header
     rate_df = pd.read_pickle('rating_pkl')
+    rate_df.columns=rate_df.columns.str.capitalize()
+    rate_df.index=rate_df.index.str.capitalize()
+
     try:
         header = rate_df.columns.tolist()
         random.shuffle(header)
         rate_df = rate_df[header]
+        print(rate_df)
+        studentname = rate_df.index.tolist()
+        studentnames = [x.capitalize() for x in studentname]
     except AttributeError:
         rate_df=[]
-    return rate_df
+        studentnames =[]
+    return (rate_df, studentnames)
 
 
 def dict_rate():

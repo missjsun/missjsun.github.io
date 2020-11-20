@@ -54,6 +54,9 @@ def mixed_groups(numberofstudents, grade, names):
                 numGroups = len(groups)
             else:
                 i += 1
+        print('Need to sort')
+        print(groups)
+        print(groupNames)
 
 # resets i to zero. Loop to move around students in groups
         i = 0
@@ -75,6 +78,8 @@ def mixed_groups(numberofstudents, grade, names):
                 groups[i].remove(groups[i][random_index])
                 groupNames[i].remove(groupNames[i][random_index])
                 t = 1
+                print('If 1')
+                print(groups[i])
 
                 # Loops through the remaining group to find a group that is too low to switch the 2 students
                 while t <= numGroups - 1:
@@ -129,7 +134,8 @@ def mixed_groups(numberofstudents, grade, names):
                 tempName = groupNames[i][random_index]
                 groups[i].remove(groups[i][random_index])
                 groupNames[i].remove(groupNames[i][random_index])
-
+                print('else')
+                print(groups[i])
                 while t <= numGroups - 1:
                     if ((sum(groups[t]) > pointsRangeHigh)):
                         random_index = random.randrange(0, len(groups[t]) - 1)
