@@ -17,20 +17,20 @@ def create_groups():
         numStudentperGroup = int(request.form['numOfStudents'])
 
         students = process.create_Students()
-        print(len(students))
+        #print(len(students))
         single = 'None'
         teacher_removed_student = 'None'
-        print('before')
-        print(teacher_removed_student)
+        #print('before')
+        #print(teacher_removed_student)
 
         try:
             teacher_removed_student = request.form.get('student')
             teacher_removed_student = teacher_removed_student.capitalize()
-            print('try')
-            print(teacher_removed_student)
+            #print('try')
+            #print(teacher_removed_student)
             single = teacher_removed_student
         except (ValueError, AttributeError):
-            print('value error')
+            #print('value error')
             teacher_removed_student = 'None'
 
         for i in selected:
@@ -54,8 +54,8 @@ def create_groups():
                     col_names = [x.capitalize() for x in temp_col_names]
                     temp_row_names = df.index.tolist()
                     row_names = [x.capitalize() for x in temp_row_names]
-                    print(row_names)
-                    print(col_names)
+                    #print(row_names)
+                    #print(col_names)
 
                     if sorted(col_names) != sorted(row_names):
                         missing.append(set(col_names).difference(row_names))
@@ -105,7 +105,7 @@ def create_groups():
                         student = ['No information for students.']
                         return render_template('upload/error.html', missing=student)
 
-                groups = mixed.mixed_groups(numStudentperGroup, grade, groups) # list
+                groups = mixed.mixed_groups(numStudentperGroup, grade, groups, students) # list
                 print('mixed')
 
             if i == 'gender':
@@ -126,15 +126,103 @@ def create_groups():
         print(userdownload)
 
         #adds info for final group for output
-        display = groups_with_data(groups)
+        display = groups_with_data(groups, selected, students)
+        display = pd.DataFrame(display)
 
-        return render_template('upload/result.html', groups=userdownload.to_html(header=False, justify="center", classes='tablestyle'), selected=choices, single=single)
+        return render_template('upload/result.html', groups=display.to_html(header=False, index=False, justify="center", classes='tablestyle'), selected=choices, single=single)
 
     return render_template('upload/create.html')
 
 
 
-def groups_with_data(groups):
+def groups_with_data(groups, selected, students):
+    for_display=[]
+    temp_group_list = []
+    temp_group = []
+    n = 1
+    if 'rate' in selected and 'mixed' in selected:
+        print('groupswithdata rate and mixed')
+        temp_rate =[]
+        individual_rate =[]
+        for_display.append(['', 'Student 1', 'Student 2', 'Student 3', 'Student 4'])
+        for_display.append(['', "Student 1's rating of others","Student 2's rating of others","Student 3's rating of others","Student 4's rating of others"])
+        #create a temp list for each group to get data about each member
+        for group in groups:
+            for member in group:
+                temp_group_list.append(member)
+
+            for i in range(len(temp_group_list)):
+                for a, b in enumerate(students):
+                    if b.name == temp_group_list[i]:
+                        grade = b.grade
+                        temp_group.append(f'{temp_group_list[i]}: {grade}')
+                        for x in range(len(temp_group_list)):
+                            for rate, pref in b.preferdict.items():
+                                if temp_group_list[x] in pref:
+                                    individual_rate.append(str(rate))
+                        individual_rate.insert(i, 'X')
+                        temp_rate.append(', '.join(individual_rate))
+                        individual_rate=[]
+
+            temp_group_list=[]
+            temp_group.insert(0, f'Group {n}')
+            n = n + 1
+            temp_rate.insert(0, 'Ratings')
+            for_display.append(temp_group)
+            for_display.append(temp_rate)
+            temp_rate=[]
+            temp_group = []
+
+    
+    # for displaying printout of groups with their partner's rating number
+    elif 'rate' in selected:
+        print('groups with data rate only')
+        for_display.append(['','Member 1', "Member 1's rating of 2", "Member 2's rating of 1", 'Member 2'])
+        for group in groups:
+            for member in group:
+                temp_group_list.append(member)
+
+            for a, b in enumerate(students):
+                if b.name == temp_group_list[0]:
+                    for rate, pref in b.preferdict.items():
+                        if temp_group_list[1] in pref:
+                            temp_group.append(temp_group_list[0])
+                            temp_group.append(rate)
+                if b.name == temp_group_list[1]:
+                    for rate,pref in b.preferdict.items():
+                        if temp_group_list[0] in pref:
+                            temp_group.append(rate)
+                            temp_group.append(member)
+
+            temp_group_list=[]
+            temp_group.insert(0, f'Group {n}')
+            n = n + 1
+            for_display.append(temp_group)
+            temp_group = []
+            
+    elif 'mixed' in selected:
+        #for displaying printout of groups with their grades
+
+        print('groupswithdata mixed only')
+        for group in groups:
+            for member in group:
+                temp_group_list.append(member)
+
+            for i in range(len(temp_group_list)):
+                for a, b in enumerate(students):
+                    if b.name == temp_group_list[i]:
+                        grade = b.grade
+                        temp_group.append(f'{temp_group_list[i]}: { grade}')
+            temp_group_list=[]
+            temp_group.insert(0, f'Group {n}')
+            n = n + 1
+            for_display.append(temp_group)
+            temp_group=[]
+    else:
+        for_display = groups
+
+    return for_display
+
 
 
 

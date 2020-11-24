@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Template Downloads {% endblock %}</h1><p></p>
+
+{% endblock %}
+
+{% block content%}
+
+
+<p><h2>Choose the template to add your student data.</h2> </p>
+
+<p></p>
+    <p><h3>Use this spreadsheet file to include information about:</h3>
+    <ul class="b"><li>Student's Name</li>
+        <li>Grade</li>
+        <li>Gender</li>
+        <li>and/or Students that should not be together.</li></ul>
+    <br>Save as CSV file to upload data.
+         <!-- GFG is the name of the
+            file to be downloaded-->
+         <!-- In order to run the code,
+            the location of the file
+            "geeksforgeeks.png" needs to
+            be changed to your local directory,
+            both the HTML and downloadable file
+            needs to be present in the same directory -->
+    <p></p>
+         <a href="/downloads/all_template.csv" download="all_template.csv">
+         <button type="button">Student Info</button>
+         </a>
+<p></p>
+    <h3>Use this google spreadsheet template to create a form:</h3>
+    <ol><li>You will be prompted to make a copy; Make a copy.</li>
+    <li>Edit the title and directions</li>
+    <li>Type in student names from cell A6 and on</li>
+    <li>Click Forms and choose "Create Form" from the dropdown menu</li>
+    <li>A copy of the form to share with your students will appear in your Google Drive</li>
+    </ol>
+    <br>Once students have completed the form, save the spreadsheet as a CSV file to upload.
+    <p></p>
+
+             <a href="https://docs.google.com/spreadsheets/d/1WNDuDGcyfD3osguEBsIgGrQfwLQ9zWKnik77jnCs02E/copy">
+         <button type="button">Student Rating</button>
+         </a>
+
+    {% endblock content %}

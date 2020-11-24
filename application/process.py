@@ -1,6 +1,5 @@
 import pandas as pd
 import random
-import io
 
 # create a class for each student
 class Student:
@@ -29,14 +28,7 @@ def create_Students():
     students = []
     missing_students_wo_info = []
     all_list = change_info_to_list()
-    print('allList')
-    print(all_list)
     rate, studentnames = shuffle_order()
-    print('Rate')
-    print(rate)
-    print('studentnames')
-    print(studentnames)
-
 
     # creates objects using the all list
     for i in range(len(all_list)):
@@ -68,7 +60,7 @@ def create_Students():
                 else:
                     new_dict_of_rate[value] = [key]
             students[a].add_dict(new_dict_of_rate)  # adds this dictionary to the object
-            print("this is the first for loop...")
+            #print("this is the first for loop...")
 
         else:
 
@@ -104,12 +96,11 @@ def banned_students_in_class(students):    # changes rating for banned students 
 
 def name_list():
     a = pd.read_pickle('all_pkl')
-    print('a - namelist')
-    print(a)
+
     try:
         all_df = a['student'].tolist()
         all_df = [x.capitalize() for x in all_df]
-        print(all_df)
+        #print(all_df)
     except (AttributeError, TypeError):
         all_df = []
     return all_df
@@ -127,7 +118,7 @@ def grade_list():
 
 def change_info_to_list():
     a = pd.read_pickle('all_pkl')
-    print(a)
+
     try:
         all_list = a.values.tolist()
         templist = []
@@ -144,22 +135,19 @@ def change_info_to_list():
     except (AttributeError, TypeError):
         all_list = []
 
-    print('all_list')
-    print(all_list)
     return all_list
 
 
 def shuffle_order():
     # get header and shuffle, then rearrange with new header
     rate_df = pd.read_pickle('rating_pkl')
-    rate_df.columns=rate_df.columns.str.capitalize()
-    rate_df.index=rate_df.index.str.capitalize()
 
     try:
+        rate_df.columns = rate_df.columns.str.capitalize()
+        rate_df.index = rate_df.index.str.capitalize()
         header = rate_df.columns.tolist()
         random.shuffle(header)
         rate_df = rate_df[header]
-        print(rate_df)
         studentname = rate_df.index.tolist()
         studentnames = [x.capitalize() for x in studentname]
     except AttributeError:

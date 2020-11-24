@@ -11,8 +11,8 @@ def change_to_dict_for_rating(students, remove_student):
 
     for i in range(0, len(students)):
         name = students[i].name
-        print(students[i])
-        print(name)
+        #print(students[i])
+        #print(name)
         if name != remove_student:
             for key, value in sorted(students[i].preferdict.items(), reverse=True):
                 new_list.append(value)
@@ -24,8 +24,8 @@ def change_to_dict_for_rating(students, remove_student):
                 if a == remove_student:
                     flat_list.remove(a)
             new_dict[name] = flat_list
-            print('NewList')
-            print(new_list)
+            #print('NewList')
+            #print(new_list)
 
             new_list = []
             flat_list = []
@@ -35,14 +35,14 @@ def change_to_dict_for_rating(students, remove_student):
 
 
 def final_matches(students, remove_student):
-    print(len(students))
+    #print(len(students))
     dictionary = change_to_dict_for_rating(students, remove_student)  # to start game
-    print(dictionary)
+    #print(dictionary)
     game = _make_players(dictionary)
     matching = stable_roommates(game)
     matching = check_final_matches(matching, remove_student)
-    print('Matching')
-    print(matching)
+    #print('Matching')
+    #print(matching)
 
     # takes the pairs of students in dictionary and create 2 separate lists as string type.
     ls = []
