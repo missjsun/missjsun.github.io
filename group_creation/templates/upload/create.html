@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+
+<title>{% block title %}{% endblock %} Upload</title>
+
+  <h1>File Upload</h1>
+
+
+{% block content%}
+
+<h2>Choose your preferences for creating groups</h2>
+
+{{message}}
+
+    <h4>Select the customizations for your group:</h4>
+<form method='post' action="/create">
+    <input type="checkbox" id="banned" name="choice" value="banned">
+  <label for="banned"> Banned Pairs</label><br>
+    <input type="checkbox" id="rate" name="choice" value="rate">
+  <label for="rate"> Student Preferences/Ratings</label><br>
+  <input type="checkbox" id="mixed" name="choice" value="mixed">
+  <label for="mixed"> Mixed Abilities</label><br>
+      <input type="checkbox" id="gender" name="choice" value="gender">
+  <label for="gender"> Mixed Gender</label><br>
+
+
+
+    <p>How many students in each group?</p>
+        <input type="radio" id="2" name="numOfStudents" value="2" required>
+        <label for="2">2</label><br>
+        <input type="radio" id="3" name="numOfStudents" value="3">
+        <label for="3">3</label><br>
+        <input type="radio" id="4" name="numOfStudents" value="4">
+        <label for="4">4</label><br>
+
+        <p><input type=submit value=Submit></p>
+    </form>
+
+
+{% endblock content%}

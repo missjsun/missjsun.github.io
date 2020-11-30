@@ -12,7 +12,10 @@ bp = Blueprint('create', __name__)
 def create_groups():
     if request.method == 'POST':
         choices = []
+        groups= []
         selected = request.form.getlist('choice')
+        if not selected:
+            return render_template("upload/create.html", message="No choice selected.")
 
         numStudentperGroup = int(request.form['numOfStudents'])
 
@@ -43,6 +46,8 @@ def create_groups():
             if i == 'rate':
                 choices.append('Student Preferences')
                 missing = []
+                missing_students_wo_info = []
+
                 print('rate')
 
                 df = pd.read_pickle('rating_pkl')
@@ -74,15 +79,20 @@ def create_groups():
                         student = missing
                         return render_template('upload/error.html', missing=student)
 
+
                     if teacher_removed_student in row_names:
                         row_names.remove(teacher_removed_student)
                     if len(row_names) % 2 == 1:
                         return render_template('upload/remove.html')
                     else:
                         groups = rating.final_matches(students, teacher_removed_student) # in dict
+
+                        #check if missing students or actual matches
+                        if type(groups) is list:
+                            return render_template('upload/errorcreate.html', missing=groups)
+
                 except AttributeError:
-                    student=["There are no ratings."]
-                    return render_template('upload/error.html', missing=student)
+                    return render_template('upload/upload.html', message="Upload file with student ratings.")
 
             if i == "mixed":
                 choices.append('Heterogeneous Groups')
@@ -90,11 +100,9 @@ def create_groups():
                 if 'rate' in selected:
                     if type(df2) is list:
                         if not df2:
-                            student=["Student grades are missing."]
-                            return render_template('upload/error.html', missing=student)
+                            return render_template('upload/upload.html', message="Upload file with student grades.")
                     elif df2.empty:
-                            student=["Student grades are missing."]
-                            return render_template('upload/error.html', missing=student)
+                            return render_template('upload/upload.html', message="Upload file with student grades.")
                     else:
                         grade = rating.grades_for_pair_matches(groups)
                         numStudentperGroup = 2
@@ -102,24 +110,34 @@ def create_groups():
                     grade = process.grade_list()
                     groups = process.name_list()
                     if not grade:
-                        student = ['No information for students.']
-                        return render_template('upload/error.html', missing=student)
+                        return render_template('upload/upload.html', message="Upload file with student grades.")
 
                 groups = mixed.mixed_groups(numStudentperGroup, grade, groups, students) # list
                 print('mixed')
 
             if i == 'gender':
                 choices.append('Gender')
-                groups, single = gender.gender_groups() # dict
-                groups = list(groups.items())
+                df2 = pd.read_pickle('all_pkl')
+                if type(df2) is list:
+                    if not df2:
+                        return render_template('upload/upload.html', message="No student gender information was uploaded.")
+                elif df2.empty:
+                    return render_template('upload/upload.html', message="No student gender information was uploaded.")
+                else:
+                    groups, single = gender.gender_groups(df2) # dict
+                    groups = list(groups.items())
                 print('gender')
+
+        if not groups:
+            message="Your file did not upload correctly."
+            return render_template('upload/upload.html', message=message)
 
         try:
             groups = list(groups.items())
         except AttributeError:
             groups = groups
 
-        path = 'application/downloads'
+        path = 'group_creation/downloads'
         output_file = os.path.join(path, 'finalGroup.csv')
         userdownload=pd.DataFrame(groups)
         userdownload.to_csv(output_file, index=False,header=False)

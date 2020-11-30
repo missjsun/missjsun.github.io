@@ -26,7 +26,6 @@ class Student:
 
 def create_Students():
     students = []
-    missing_students_wo_info = []
     all_list = change_info_to_list()
     rate, studentnames = shuffle_order()
 
@@ -53,30 +52,35 @@ def create_Students():
             ranksforstudentdict = ranks_for_student.to_dict()  # puts that row into a dictionary
             new_dict_of_rate = {}
             for key, value in ranksforstudentdict.items():  # creates new dictionary based on #rank as key; students as list values
-                if value in new_dict_of_rate:
-                    new_dict_of_rate[value].append(key)
-                    if len(new_dict_of_rate[value])>1:
-                        random.shuffle(new_dict_of_rate[value])
+                if key == studentnames[i]:
+                    continue
                 else:
-                    new_dict_of_rate[value] = [key]
-            students[a].add_dict(new_dict_of_rate)  # adds this dictionary to the object
+                    if value in new_dict_of_rate:
+                        new_dict_of_rate[value].append(key)
+                        if len(new_dict_of_rate[value])>1:
+                            random.shuffle(new_dict_of_rate[value])
+                    else:
+                        new_dict_of_rate[value] = [key]
+                students[a].add_dict(new_dict_of_rate)  # adds this dictionary to the object
             #print("this is the first for loop...")
 
         else:
-
-            missing_students_wo_info.append(studentnames[i])
             ranks_for_student = rate.loc[studentnames[i]] #gets all the ratings
             ranksforstudentdict = ranks_for_student.to_dict() #puts their rating to a dictionary
             new_dict_of_rate = {}
             for key, value in ranksforstudentdict.items():
-                if value in new_dict_of_rate:
-                    new_dict_of_rate[value].append(key)
-                    if len(new_dict_of_rate[value])>1:
-                        random.shuffle(new_dict_of_rate[value])
+                if key == studentnames[i]:
+                    continue
                 else:
-                    new_dict_of_rate[value] = [key]
+                    if value in new_dict_of_rate:
+                        new_dict_of_rate[value].append(key)
+                        if len(new_dict_of_rate[value])>1:
+                            random.shuffle(new_dict_of_rate[value])
+                    else:
+                        new_dict_of_rate[value] = [key]
             students.append(Student(studentnames[i], 0, 'n', 'None'))
             students[-1].add_dict(new_dict_of_rate)
+            print(new_dict_of_rate)
     return students
 
 def banned_students_in_class(students):    # changes rating for banned students to 0

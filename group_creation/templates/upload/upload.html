@@ -10,12 +10,14 @@
 
 <h2>Upload your class information</h2>
 
-    <h4>Upload multiple CSV files of your student data.</h4>
+    <h4>Upload CSV file(s) of your student data.</h4>
+    <h4>Click the "Templates" tab to see examples of valid files.</h4>
     <form method=post action="/upload" enctype=multipart/form-data>
         <p><input type=file name=file[] multiple='' accept="text/csv"></p>
         <p><input type=submit value=Upload></p>
     </form>
 
+    <p>{{ message }}</p>
 
 
 {% endblock content%}

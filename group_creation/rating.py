@@ -8,6 +8,7 @@ import process
 def change_to_dict_for_rating(students, remove_student):
     new_dict = {}
     new_list = []
+    missing_students_wo_info = []
 
     for i in range(0, len(students)):
         name = students[i].name
@@ -18,57 +19,69 @@ def change_to_dict_for_rating(students, remove_student):
                 new_list.append(value)
 
             flat_list = [item for sublist in new_list for item in sublist]
+            #print(flat_list)
             for a in flat_list:
                 if pd.isnull(a):
                     flat_list.remove(a)
+            for a in flat_list:
                 if a == remove_student:
                     flat_list.remove(a)
             new_dict[name] = flat_list
-            #print('NewList')
-            #print(new_list)
+            if not flat_list:
+                missing_students_wo_info.append(name)
+
+            #print('rating.py - flat-list -31')
+            #print(flat_list)
 
             new_list = []
             flat_list = []
         else:
             continue
-    return new_dict
+    #print("rating.py - 38")
+    #print(missing_students_wo_info)
+    return new_dict, missing_students_wo_info
 
 
 def final_matches(students, remove_student):
     #print(len(students))
-    dictionary = change_to_dict_for_rating(students, remove_student)  # to start game
+    dictionary, missing_students_wo_info = change_to_dict_for_rating(students, remove_student)  # to start game
     #print(dictionary)
-    game = _make_players(dictionary)
-    matching = stable_roommates(game)
-    matching = check_final_matches(matching, remove_student)
-    #print('Matching')
-    #print(matching)
+    if not missing_students_wo_info:
 
-    # takes the pairs of students in dictionary and create 2 separate lists as string type.
-    ls = []
-    pair1 = []
-    pair2 = []
-    ls = list(matching.keys())
-    for elem in ls:
-        elem = str(elem)
-        pair1.append(elem)
-    st = []
-    st = list(matching.values())
-    for item in st:
-        item = str(item)
-        pair2.append(item)
+        game = _make_players(dictionary)
+        matching = stable_roommates(game)
+        matching = check_final_matches(matching, remove_student)
+        #print('Matching')
+        #print(matching)
 
-    # convert back to dictionary as string type
-    matching = {pair1[i]: pair2[i] for i in range(len(pair1))}
+        # takes the pairs of students in dictionary and create 2 separate lists as string type.
+        ls = []
+        pair1 = []
+        pair2 = []
+        ls = list(matching.keys())
+        for elem in ls:
+            elem = str(elem)
+            pair1.append(elem)
+        st = []
+        st = list(matching.values())
+        for item in st:
+            item = str(item)
+            pair2.append(item)
 
-    # checks for duplicates and removes the duplicate pair of matches
-    finalMatch = {}
-    for key, value in matching.items():
-        if key not in finalMatch.values():
-            finalMatch[key] = value
-    print(finalMatch)
+        # convert back to dictionary as string type
+        matching = {pair1[i]: pair2[i] for i in range(len(pair1))}
 
-    return finalMatch
+        # checks for duplicates and removes the duplicate pair of matches
+        finalMatch = {}
+        for key, value in matching.items():
+            if key not in finalMatch.values():
+                finalMatch[key] = value
+        #print('rating.py - 77')
+        #print(finalMatch)
+
+        return finalMatch
+    else:
+        return missing_students_wo_info #list
 
 def check_final_matches(finalMatch, remove_student):
     # checks final matches

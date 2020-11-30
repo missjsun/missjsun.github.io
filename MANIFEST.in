@@ -1,0 +1,4 @@
+include
+graft group_creation/static
+graft group_creation/templates
+global-exclude *.pyc

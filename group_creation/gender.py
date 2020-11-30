@@ -1,12 +1,7 @@
-from flask import (render_template,request)
 
-import pandas as pd
 import random
-import os
 
-def gender_groups():
-
-    df2 = pd.read_pickle('all_pkl')
+def gender_groups(df2):
 
     namelist = df2['student'].tolist()
     genderList = df2['gender'].tolist()
@@ -47,12 +42,5 @@ def gender_groups():
         pairs[name1] = name2
         m = genderList.count('m')
         f = genderList.count('f')
-
-    path = 'application/downloads'
-    output_file = os.path.join(path, 'finalGroup.csv')
-
-    userdownload = pd.DataFrame.from_dict(pairs,orient='index')
-    userdownload.to_html()
-    userdownload.to_csv(output_file, header=False)
 
     return pairs, single

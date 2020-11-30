@@ -10,9 +10,11 @@
 
 <h2>Choose your preferences for creating groups</h2>
 
-    These students have not rated others: {{ missing }}
+    These students have not rated others:
+        <p><ul class="b">{% for student in missing %} <li>{{ student }}</li>{% endfor %}</p>
 
-    <p>Please make sure they have rated everyone before creating groups based on rating.</p>
+
+    <p>Please make sure they have rated everyone before creating groups based on Ratings.</p>
 
     <h4>Select the customizations for your group:</h4>
 <form method='post' action="/create">

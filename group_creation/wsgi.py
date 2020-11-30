@@ -1,4 +1,4 @@
-from application import create_app
+from group_creation import create_app
 
 app = create_app()
 
