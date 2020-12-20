@@ -3,11 +3,12 @@ import random
 
 # create a class for each student
 class Student:
-    def __init__(self, name, grade, gender, banned):
+    def __init__(self, name, grade, gender, banned, email):
         self.name = name
         self.grade = grade
         self.gender = gender
         self.banned = banned
+        self.email = email
         self.preferdict = {}
 
     def add_dict(self, preferdict):
@@ -36,9 +37,9 @@ def create_Students():
                 if b.name == studentnames[i]:
                     index = a
                     break
-            students[a] = Student(all_list[i][0], all_list[i][1], all_list[i][2], all_list[i][3])
+            students[a] = Student(all_list[i][0], all_list[i][1], all_list[i][2], all_list[i][3], all_list[i][4])
         else:
-            students.append(Student(all_list[i][0], all_list[i][1], all_list[i][2], all_list[i][3]))
+            students.append(Student(all_list[i][0], all_list[i][1], all_list[i][2], all_list[i][3], all_list[i][4]))
 
     # checks the rating csv. Sees if student is already an object to add to their preference to their instance
     index = 0
@@ -61,7 +62,8 @@ def create_Students():
                             random.shuffle(new_dict_of_rate[value])
                     else:
                         new_dict_of_rate[value] = [key]
-                students[a].add_dict(new_dict_of_rate)  # adds this dictionary to the object
+            students[a].add_dict(new_dict_of_rate)# adds this dictionary to the object
+            print(f'process.py -65: {new_dict_of_rate}')
             #print("this is the first for loop...")
 
         else:
@@ -78,9 +80,9 @@ def create_Students():
                             random.shuffle(new_dict_of_rate[value])
                     else:
                         new_dict_of_rate[value] = [key]
-            students.append(Student(studentnames[i], 0, 'n', 'None'))
+            students.append(Student(studentnames[i], 0, 'n', 'None', 'None'))
             students[-1].add_dict(new_dict_of_rate)
-            print(new_dict_of_rate)
+            print(f'process.py -84: {new_dict_of_rate}')
     return students
 
 def banned_students_in_class(students):    # changes rating for banned students to 0

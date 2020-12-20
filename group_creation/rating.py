@@ -1,5 +1,4 @@
 import pandas as pd
-from matching import Player
 from matching.games.stable_roommates import _make_players
 from matching.algorithms import stable_roommates
 import process
@@ -55,14 +54,12 @@ def final_matches(students, remove_student):
         #print(matching)
 
         # takes the pairs of students in dictionary and create 2 separate lists as string type.
-        ls = []
         pair1 = []
         pair2 = []
         ls = list(matching.keys())
         for elem in ls:
             elem = str(elem)
             pair1.append(elem)
-        st = []
         st = list(matching.values())
         for item in st:
             item = str(item)
@@ -77,7 +74,7 @@ def final_matches(students, remove_student):
             if key not in finalMatch.values():
                 finalMatch[key] = value
         #print('rating.py - 77')
-        #print(finalMatch)
+        #21print(finalMatch)
 
         return finalMatch
     else:

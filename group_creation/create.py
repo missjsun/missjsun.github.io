@@ -13,27 +13,25 @@ def create_groups():
     if request.method == 'POST':
         choices = []
         groups= []
+        ban = False
         selected = request.form.getlist('choice')
         if not selected:
             return render_template("upload/create.html", message="No choice selected.")
 
+        df2 = pd.read_pickle('all_pkl')
+
         numStudentperGroup = int(request.form['numOfStudents'])
 
         students = process.create_Students()
-        #print(len(students))
         single = 'None'
         teacher_removed_student = 'None'
-        #print('before')
-        #print(teacher_removed_student)
+
 
         try:
             teacher_removed_student = request.form.get('student')
             teacher_removed_student = teacher_removed_student.capitalize()
-            #print('try')
-            #print(teacher_removed_student)
             single = teacher_removed_student
         except (ValueError, AttributeError):
-            #print('value error')
             teacher_removed_student = 'None'
 
         for i in selected:
@@ -42,12 +40,11 @@ def create_groups():
                 students = process.banned_students_in_class(students)
                 choices.append('Banned')
                 print('banned')
+                ban = True
 
             if i == 'rate':
                 choices.append('Student Preferences')
                 missing = []
-                missing_students_wo_info = []
-
                 print('rate')
 
                 df = pd.read_pickle('rating_pkl')
@@ -59,8 +56,6 @@ def create_groups():
                     col_names = [x.capitalize() for x in temp_col_names]
                     temp_row_names = df.index.tolist()
                     row_names = [x.capitalize() for x in temp_row_names]
-                    #print(row_names)
-                    #print(col_names)
 
                     if sorted(col_names) != sorted(row_names):
                         missing.append(set(col_names).difference(row_names))
@@ -86,7 +81,7 @@ def create_groups():
                         return render_template('upload/remove.html')
                     else:
                         groups = rating.final_matches(students, teacher_removed_student) # in dict
-
+                        print(f'create.py 88 groups {groups}')
                         #check if missing students or actual matches
                         if type(groups) is list:
                             return render_template('upload/errorcreate.html', missing=groups)
@@ -96,7 +91,17 @@ def create_groups():
 
             if i == "mixed":
                 choices.append('Heterogeneous Groups')
-                df2 = pd.read_pickle('all_pkl')
+
+                grade = process.grade_list()
+                if not grade:
+                    return render_template('upload/upload.html', message="Upload file with student grades.")
+
+                # check to make sure everyone has a grade
+                for a in grade:
+                    if pd.isnull(a):
+                        return render_template('upload/upload.html',
+                                               message="There are student(s) missing a grade. Please fill in a grade for them.")
+
                 if 'rate' in selected:
                     if type(df2) is list:
                         if not df2:
@@ -105,14 +110,13 @@ def create_groups():
                             return render_template('upload/upload.html', message="Upload file with student grades.")
                     else:
                         grade = rating.grades_for_pair_matches(groups)
+                        print(f'create.py 121 grade {grade}')
                         numStudentperGroup = 2
                 else:
-                    grade = process.grade_list()
                     groups = process.name_list()
-                    if not grade:
-                        return render_template('upload/upload.html', message="Upload file with student grades.")
 
-                groups = mixed.mixed_groups(numStudentperGroup, grade, groups, students) # list
+                groups = mixed.mixed_groups(numStudentperGroup, grade, groups, students, ban) # list
+                print(f'create.py 127 groups {groups}')
                 print('mixed')
 
             if i == 'gender':
@@ -136,12 +140,30 @@ def create_groups():
             groups = list(groups.items())
         except AttributeError:
             groups = groups
-
+        #saves groups as csv file
         path = 'group_creation/downloads'
         output_file = os.path.join(path, 'finalGroup.csv')
         userdownload=pd.DataFrame(groups)
         userdownload.to_csv(output_file, index=False,header=False)
         print(userdownload)
+
+        #saves groups as CSV file for Zoom breakout rooms
+        breakout_rooms=[['Pre-assign Room Name', "Email Address"]]
+        temp_list=[]
+        i = 1
+        for group in groups:
+            for member in group:
+                for a, b in enumerate(students):
+                    if b.name == member:
+                        temp_list = [f'room{i}', b.email]
+                breakout_rooms.append(temp_list)
+                temp_list=[]
+            i=i+1
+        output_file1 = os.path.join(path, "breakoutroom.csv")
+        userdownload=pd.DataFrame(breakout_rooms)
+        userdownload.to_csv(output_file1, index=False,header=False)
+
+
 
         #adds info for final group for output
         display = groups_with_data(groups, selected, students)

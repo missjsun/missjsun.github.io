@@ -28,8 +28,8 @@ def create_app():
 
         path = 'group_creation/downloads'
         output_file = os.path.join(path, 'all_template.csv')
-        emptydata=[['type in student names in this column', '  ', '  ', ' students to keep apart']]
-        all_template = pd.DataFrame(emptydata, columns=['student', 'grade', 'gender', 'banned'])
+        emptydata=[['type in student names in this column', '  ', '  ', 'students to keep apart', 'email']]
+        all_template = pd.DataFrame(emptydata, columns=['student', 'grade', 'gender', 'banned', 'email'])
         all_template.to_csv(output_file, index=False)
         return render_template('upload/templates.html')
 

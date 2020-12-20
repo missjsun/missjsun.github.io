@@ -3,7 +3,7 @@ import statistics
 import numpy as np
 
 
-def mixed_groups(numStudentperGroup, grade, names, students):
+def mixed_groups(numStudentperGroup, grade, names, students, ban):
 
     try:
         nameList = list(names.keys())
@@ -18,7 +18,10 @@ def mixed_groups(numStudentperGroup, grade, names, students):
         nameList, grade = shuffles_students(nameList, grade)
         groups = list(chunks(grade, numStudentperGroup))
         groupNames = list(chunks(nameList, numStudentperGroup))
-        verified = check_banned(groupNames, groups, grade, students, nameList, numStudentperGroup)
+        if ban:
+            verified = check_banned(groupNames, groups, grade, students, nameList, numStudentperGroup)
+        else:
+            verified = False
 
 
     # get some data
@@ -37,25 +40,27 @@ def mixed_groups(numStudentperGroup, grade, names, students):
         pointsRangeHigh = pointsPerGroup + res
 
 
-    print(groups)
-    print(groupNames)
+    print(f'mixed.py 41 - groups {groups}')
+    print(f'mixed.py 42 - groupnames {groupNames}')
 
     finalizedGroups = create_mixed_groups(groups, pointsRangeLow, pointsRangeHigh, groupNames, numGroups, numStudentperGroup)
-
+    print(f'mixed.py 45 - finalizedgroups {finalizedGroups}')
     #if rated first, then gets the pairs and puts them together.
     try:
         list(names.keys())
     except (AttributeError, TypeError):
         verified = True
-        while verified:
-            verified = check_banned(finalizedGroups, groups, grade, students, nameList, numStudentperGroup)
-            if verified:
-                nameList, grade = shuffles_students(nameList, grade)
-                groups = list(chunks(grade, numStudentperGroup))
-                groupNames = list(chunks(nameList, numStudentperGroup))
-                finalizedGroups = create_mixed_groups(groups, pointsRangeLow, pointsRangeHigh, groupNames, numGroups, numStudentperGroup)
-            else:
-                final = finalizedGroups
+        if ban:
+            while verified:
+                verified = check_banned(finalizedGroups, groups, grade, students, nameList, numStudentperGroup)
+                if verified:
+                    nameList, grade = shuffles_students(nameList, grade)
+                    groups = list(chunks(grade, numStudentperGroup))
+                    groupNames = list(chunks(nameList, numStudentperGroup))
+                    finalizedGroups = create_mixed_groups(groups, pointsRangeLow, pointsRangeHigh, groupNames, numGroups, numStudentperGroup)
+
+        final = finalizedGroups
+        print(f'mixed.py - 61 final {final}')
 
     else: # no exception raised
         final = []
@@ -69,16 +74,33 @@ def mixed_groups(numStudentperGroup, grade, names, students):
             final.append(templist)
             templist = []
         verified = True
-        while verified:
-            verified = check_banned(final, groups, grade, students, nameList, numStudentperGroup)
-            if verified:
-                nameList = list(names.keys())
-                nameList, grade = shuffles_students(nameList, grade)
-                groups = list(chunks(grade, numStudentperGroup))
-                groupNames = list(chunks(nameList, numStudentperGroup))
-                final = create_mixed_groups(groups, pointsRangeLow, pointsRangeHigh, groupNames, numGroups, numStudentperGroup)
-            else:
-                final = final
+        counter = 0
+        if ban:
+            while verified:
+                verified = check_banned(final, groups, grade, students, nameList, numStudentperGroup)
+                if verified:
+                    nameList = list(names.keys())
+                    nameList, grade = shuffles_students(nameList, grade)
+                    groups = list(chunks(grade, numStudentperGroup))
+                    groupNames = list(chunks(nameList, numStudentperGroup))
+                    finalizedGroups = create_mixed_groups(groups, pointsRangeLow, pointsRangeHigh, groupNames, numGroups, numStudentperGroup)
+
+                    final = []
+                    templist = []
+                    for a in finalizedGroups:
+                        for b in a:
+                            for key in names:
+                                if b == key:
+                                    templist.append(b)
+                                    templist.append(names[b])
+                        final.append(templist)
+                        templist = []
+                counter = counter + 1
+                if counter > 5:
+                    break
+
+            #final = finalizedGroups
+        print(f'mixed.py - 86 -final {final}')
 
     return final
 
@@ -108,10 +130,6 @@ def check_banned(groupNames, groups, grade, students, nameList, numStudentperGro
             for b,c in enumerate(students):
                 if c.name==check_student:
                     if c.banned in check_list:
-                        #nameList, grade = shuffles_students(nameList, grade)
-                        #groups = list(chunks(grade, numStudentperGroup))
-                        #groupNames=list(chunks(nameList, numStudentperGroup))
-                        #i=0
                         print('it shuffled')
                         verified = True
     return verified
